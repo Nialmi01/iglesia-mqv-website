@@ -175,7 +175,7 @@ router.get('/', async (req, res) => {
         const infoIglesia = {
             mision: "Ser una iglesia que impacte vidas para Cristo, formando discípulos comprometidos con el Reino de Dios.",
             vision: "Ser más que vencedores en Cristo, siendo luz y sal en nuestra comunidad y el mundo.",
-            direccion: "Av. Principal #123, Ciudad, País",
+            direccion: "Av. Ferrocarril de Occidente #81-66, Fontibón, Bogotá, Cundinamarca",
             telefono: "+1 234 567 8900",
             email: "info@iglesiaiqv.com",
             horarios: {
@@ -430,7 +430,7 @@ router.get('/contacto', (req, res) => {
         title: 'Contacto - Iglesia MQV',
         infoIglesia: {
             nombre: "Iglesia Más que Vencedores (MQV) - Tu Casa",
-            direccion: "Av. Principal #123, Ciudad, País",
+            direccion: "Av. Ferrocarril de Occidente #81-66, Fontibón, Bogotá, Cundinamarca",
             telefono: "+1 234 567 8900",
             email: "info@masquevencedores.com",
             horarios: {
