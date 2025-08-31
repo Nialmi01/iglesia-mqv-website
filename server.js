@@ -34,14 +34,44 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-// Conectar a MongoDB
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/iglesia_mqv')
-    .then(() => console.log('✅ Conectado a MongoDB'))
-    .catch(err => {
-        console.error('❌ Error conectando a MongoDB:', err.message);
-        console.log('📝 Para instalar MongoDB, visita: https://www.mongodb.com/try/download/community');
+// Conectar a MongoDB con configuración mejorada para producción
+const connectDB = async () => {
+    try {
+        const mongoOptions = {
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+            serverSelectionTimeoutMS: 5000, // Timeout después de 5s en lugar de 30s
+            socketTimeoutMS: 45000, // Cerrar sockets después de 45s de inactividad
+            maxPoolSize: 10, // Mantener hasta 10 conexiones de socket
+            bufferMaxEntries: 0, // Deshabilitar mongoose buffering
+            bufferCommands: false, // Deshabilitar mongoose buffering
+        };
+
+        if (process.env.NODE_ENV === 'production') {
+            mongoOptions.retryWrites = true;
+            mongoOptions.w = 'majority';
+        }
+
+        await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/iglesia_mqv', mongoOptions);
+        console.log('✅ Conectado a MongoDB');
+    } catch (error) {
+        console.error('❌ Error conectando a MongoDB:', error.message);
+        
+        if (process.env.NODE_ENV === 'production') {
+            console.log('🔧 Para configurar MongoDB en producción:');
+            console.log('1. Crear cluster gratuito en MongoDB Atlas');
+            console.log('2. Configurar MONGODB_URI en variables de entorno');
+            console.log('3. Verificar Network Access en Atlas');
+        } else {
+            console.log('📝 Para instalar MongoDB localmente, visita: https://www.mongodb.com/try/download/community');
+        }
+        
         console.log('⚠️  La aplicación continuará funcionando, pero necesita MongoDB para ser completamente funcional');
-    });
+    }
+};
+
+// Llamar función de conexión
+connectDB();
 
 // Importar rutas
 const authRoutes = require('./routes/auth');
