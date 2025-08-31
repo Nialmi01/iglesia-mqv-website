@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acerca de Nosotros - Iglesia MQV</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="/css/style.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navegación -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="/">
+                <i class="fas fa-church me-2"></i>
+                Iglesia MQV
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Inicio</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/ministerios">Ministerios</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/acerca">Acerca</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/contacto">Contacto</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/login">
+                            <i class="fas fa-sign-in-alt me-1"></i>
+                            Admin
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenido Principal -->
+    <main class="main-content page-transition">
+
+<!-- Page Header -->
+<section class="page-header">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h1 class="display-5 fw-bold mb-3">Acerca de Nosotros</h1>
+                <p class="lead mb-0">
+                    Conoce más sobre nuestra historia, misión y el corazón de nuestra iglesia.
+                </p>
+            </div>
+            <div class="col-lg-4 text-center">
+                <i class="fas fa-heart page-icon"></i>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Misión, Visión y Valores -->
+<section class="content-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-4 mb-4">
+                <div class="unified-card">
+                    <div class="icon-wrapper">
+                        <i class="fas fa-bullseye"></i>
+                    </div>
+                    <h3 class="card-title mb-4 text-primary">Nuestra Misión</h3>
+                    <p class="card-text">
+                        <%= infoIglesia.mision %>
+                    </p>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 mb-4">
+                <div class="unified-card">
+                    <div class="icon-wrapper">
+                        <i class="fas fa-eye"></i>
+                    </div>
+                    <h3 class="card-title mb-4 text-primary">Nuestra Visión</h3>
+                    <p class="card-text">
+                        <%= infoIglesia.vision %>
+                    </p>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 mb-4">
+                <div class="unified-card">
+                    <div class="icon-wrapper">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <h3 class="card-title mb-4 text-primary">Nuestros Valores</h3>
+                    <ul class="list-unstyled text-start">
+                        <% infoIglesia.valores.forEach(valor => { %>
+                            <li class="mb-2">
+                                <i class="fas fa-check text-success me-2"></i>
+                                <%= valor %>
+                            </li>
+                        <% }) %>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Historia -->
+<section class="content-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 mb-4">
+                <h2 class="mb-4 text-primary">Nuestra Historia</h2>
+                <p class="mb-4">
+                    La Iglesia Más que Vencedores nació del corazón de Dios para ser un refugio 
+                    y hogar espiritual para todas las familias. Desde nuestros inicios, hemos 
+                    sido testigos de cómo Dios transforma vidas y restaura familias.
+                </p>
+                <p class="mb-4">
+                    A lo largo de los años, hemos visto crecer nuestra comunidad no solo en 
+                    número, sino en madurez espiritual y compromiso con el Reino de Dios. 
+                    Cada testimonio, cada vida transformada, cada familia restaurada es 
+                    evidencia del amor y la fidelidad de nuestro Señor.
+                </p>
+                <p class="mb-4">
+                    Hoy continuamos con la misión de ser más que vencedores en Cristo, 
+                    impactando nuestra comunidad y las naciones con el amor de Dios.
+                </p>
+            </div>
+            <div class="col-lg-6 mb-4">
+                <div class="card border-0 shadow">
+                    <div class="card-body p-0">
+                        <div class="bg-primary text-white text-center p-5 rounded">
+                            <i class="fas fa-church fa-5x mb-4"></i>
+                            <h4 class="mb-3">Desde el comienzo</h4>
+                            <p class="mb-0">
+                                Dios ha sido fiel en cada etapa de nuestro crecimiento, 
+                                y seguiremos confiando en Sus planes perfectos para nuestra iglesia.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Liderazgo -->
+<section class="py-5">
+    <div class="container">
+        <h2 class="text-center mb-5">
+            <i class="fas fa-users text-primary me-2"></i>
+            Nuestro Liderazgo Pastoral
+        </h2>
+        
+        <!-- Pastores Principales -->
+        <div class="row justify-content-center mb-5">
+            <!-- Pastor Edgar Bernal -->
+            <div class="col-lg-5 col-md-6 mb-4">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body text-center p-4">
+                        <div class="mb-4">
+                            <div class="bg-primary rounded-circle mx-auto d-flex align-items-center justify-content-center text-white" 
+                                 style="width: 100px; height: 100px;">
+                                <i class="fas fa-user fa-2x"></i>
+                            </div>
+                        </div>
+                        
+                        <h4 class="card-title mb-2 text-primary">Pastor Edgar Bernal</h4>
+                        <p class="text-muted mb-3 fw-bold">Pastor Principal</p>
+                        
+                        <p class="card-text text-muted">
+                            Con una pasión ardiente por las almas y un corazón pastoral dedicado al servicio de Dios, lidera con humildad y sabiduría nuestra congregación.
+                        </p>
+                        
+                        <div class="mt-3">
+                            <blockquote class="blockquote">
+                                <p class="mb-0 fst-italic text-sm">
+                                    "Mi mayor pasión es ver vidas transformadas por el poder del Evangelio"
+                                </p>
+                            </blockquote>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Pastora Bibi Bernal -->
+            <div class="col-lg-5 col-md-6 mb-4">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body text-center p-4">
+                        <div class="mb-4">
+                            <div class="bg-success rounded-circle mx-auto d-flex align-items-center justify-content-center text-white" 
+                                 style="width: 100px; height: 100px;">
+                                <i class="fas fa-user fa-2x"></i>
+                            </div>
+                        </div>
+                        
+                        <h4 class="card-title mb-2 text-success">Pastora Bibi Bernal</h4>
+                        <p class="text-muted mb-3 fw-bold">Pastora Principal</p>
+                        
+                        <p class="card-text text-muted">
+                            Con un corazón pastoral lleno de amor y dedicación, ministra con gracia y sabiduría. Su liderazgo se refleja en el cuidado espiritual de cada miembro de la congregación.
+                        </p>
+                        
+                        <div class="mt-3">
+                            <blockquote class="blockquote">
+                                <p class="mb-0 fst-italic text-sm">
+                                    "Servimos con amor para edificar familias sólidas en Cristo"
+                                </p>
+                            </blockquote>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mensaje conjunto -->
+        <div class="row justify-content-center mb-5">
+            <div class="col-lg-10">
+                <div class="card border-0 bg-light-primary">
+                    <div class="card-body p-5 text-center">
+                        <h5 class="text-primary mb-3">
+                            <i class="fas fa-heart me-2"></i>
+                            Mensaje Pastoral
+                        </h5>
+                        <p class="lead text-muted mb-0">
+                            "Juntos, como familia pastoral, hemos dedicado nuestras vidas a edificar el Reino de Dios 
+                            y transformar vidas a través del poder del Evangelio. Nuestra visión es ver a cada persona 
+                            convertirse en <strong>más que vencedores</strong> en Cristo Jesús, creciendo en fe, 
+                            fortaleciendo sus familias y siendo luz en su comunidad."
+                        </p>
+                        <hr class="my-4">
+                        <p class="mb-0 text-muted">
+                            <em>Con amor pastoral,<br>
+                            Pastor Edgar Bernal y Pastora Bibi Bernal</em>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Equipo de Liderazgo -->
+        <div class="row mt-5">
+            <div class="col-12">
+                <h3 class="text-center mb-4">Equipo Pastoral</h3>
+            </div>
+            
+            <%
+            const equipoPastoral = [
+                { 
+                    nombre: 'Pastora Bibi Bernal', 
+                    cargo: 'Pastora Principal', 
+                    descripcion: 'Junto al Pastor Edgar, lidera con amor y dedicación nuestra congregación. Su corazón pastoral se refleja en el cuidado y formación espiritual de cada miembro.' 
+                },
+                { 
+                    nombre: 'Pastor de Jóvenes', 
+                    cargo: 'Ministerio Juvenil', 
+                    descripcion: 'Guía y forma a la próxima generación de líderes con pasión y compromiso por su crecimiento espiritual.' 
+                },
+                { 
+                    nombre: 'Líder de Evangelismo', 
+                    cargo: 'Ministerio de Evangelismo', 
+                    descripcion: 'Lidera nuestros esfuerzos evangelísticos llevando el mensaje de salvación a nuestra comunidad.' 
+                }
+            ];
+            %>
+            
+            <% equipoPastoral.forEach(pastor => { %>
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body text-center">
+                            <div class="mb-3">
+                                <div class="bg-light rounded-circle mx-auto d-flex align-items-center justify-content-center text-primary" 
+                                     style="width: 80px; height: 80px;">
+                                    <i class="fas fa-user fa-2x"></i>
+                                </div>
+                            </div>
+                            
+                            <h5 class="card-title"><%= pastor.nombre %></h5>
+                            <p class="text-primary mb-2"><%= pastor.cargo %></p>
+                            <p class="card-text text-muted"><%= pastor.descripcion %></p>
+                        </div>
+                    </div>
+                </div>
+            <% }) %>
+        </div>
+    </div>
+</section>
+
+<!-- Llamado a la acción -->
+<section class="py-5 bg-primary text-white">
+    <div class="container text-center">
+        <h2 class="mb-4">¡Ven y sé parte de la familia MQV!</h2>
+        <p class="lead mb-4">
+            Te invitamos a conocer más sobre nuestra iglesia y experimentar 
+            el amor de Dios en comunidad.
+        </p>
+        
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="d-flex justify-content-center gap-3 flex-wrap">
+                    <a href="/contacto" class="btn btn-light btn-lg">
+                        <i class="fas fa-envelope me-2"></i>
+                        Contáctanos
+                    </a>
+                    <a href="/ministerios" class="btn btn-outline-light btn-lg">
+                        <i class="fas fa-users me-2"></i>
+                        Conoce los Ministerios
+                    </a>
+                </div>
+                
+                <div class="mt-4">
+                    <p class="mb-2">
+                        <i class="fas fa-map-marker-alt me-2"></i>
+                        <%= infoIglesia.direccion %>
+                    </p>
+                    <p class="mb-2">
+                        <i class="fas fa-phone me-2"></i>
+                        <%= infoIglesia.telefono %>
+                    </p>
+                    <p class="mb-0">
+                        <i class="fas fa-clock me-2"></i>
+                        Domingos 9:00 AM y 6:00 PM
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-4">
+                    <h5 class="fw-bold mb-3">
+                        <i class="fas fa-church me-2"></i>
+                        Iglesia MQV
+                    </h5>
+                    <p class="text-muted">
+                        Más que Vencedores - Un lugar donde Dios transforma vidas y fortalece familias en Cristo.
+                    </p>
+                </div>
+                <div class="col-lg-4 mb-4">
+                    <h5 class="fw-bold mb-3">Enlaces Rápidos</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="/" class="text-decoration-none text-muted">Inicio</a></li>
+                        <li><a href="/ministerios" class="text-decoration-none text-muted">Ministerios</a></li>
+                        <li><a href="/acerca" class="text-decoration-none text-muted">Acerca</a></li>
+                        <li><a href="/contacto" class="text-decoration-none text-muted">Contacto</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-4 mb-4">
+                    <h5 class="fw-bold mb-3">Contacto</h5>
+                    <p class="text-muted mb-2">
+                        <i class="fas fa-map-marker-alt me-2"></i>
+                        Av. Principal #123, Ciudad, País
+                    </p>
+                    <p class="text-muted mb-2">
+                        <i class="fas fa-phone me-2"></i>
+                        +1 234 567 8900
+                    </p>
+                    <p class="text-muted">
+                        <i class="fas fa-envelope me-2"></i>
+                        info@iglesiamqv.com
+                    </p>
+                </div>
+            </div>
+            <hr class="border-secondary">
+            <div class="text-center">
+                <p class="mb-0 text-muted">
+                    &copy; 2024 Iglesia Más que Vencedores. Todos los derechos reservados.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <!-- Custom JS -->
+    <script src="/js/main.js"></script>
+</body>
+</html>

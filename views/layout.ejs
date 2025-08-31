@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+    
+    <% if (typeof additionalCSS !== 'undefined') { %>
+        <% additionalCSS.forEach(css => { %>
+            <link rel="stylesheet" href="<%= css %>">
+        <% }) %>
+    <% } %>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="/">
+                <i class="fas fa-church me-2"></i>
+                Iglesia MQV
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Inicio</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/acerca">Acerca</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            Ministerios
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/ministerios">Todos los Ministerios</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/ministerio/Adoración%20y%20Música">Adoración y Música</a></li>
+                            <li><a class="dropdown-item" href="/ministerio/Jóvenes">Jóvenes</a></li>
+                            <li><a class="dropdown-item" href="/ministerio/Niños">Niños</a></li>
+                            <li><a class="dropdown-item" href="/ministerio/Mujeres">Mujeres</a></li>
+                            <li><a class="dropdown-item" href="/ministerio/Hombres">Hombres</a></li>
+                            <li><a class="dropdown-item" href="/ministerio/Intercesión">Intercesión</a></li>
+                            <li><a class="dropdown-item" href="/ministerio/Evangelismo">Evangelismo</a></li>
+                            <li><a class="dropdown-item" href="/ministerio/Misiones">Misiones</a></li>
+                            <li><a class="dropdown-item" href="/ministerio/Diaconos">Diaconos</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/contacto">Contacto</a>
+                    </li>
+                </ul>
+                
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/login">
+                            <i class="fas fa-sign-in-alt me-1"></i>
+                            Admin
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main style="padding-top: 76px;">
+        <%- body %>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-light py-5 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-4">
+                    <h5 class="fw-bold mb-3">
+                        <i class="fas fa-church me-2"></i>
+                        Iglesia Más que Vencedores
+                    </h5>
+                    <p class="mb-3">Tu casa, donde Dios transforma vidas y familias.</p>
+                    <div class="d-flex">
+                        <a href="#" class="text-light me-3"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="text-light me-3"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-light me-3"><i class="fab fa-youtube"></i></a>
+                        <a href="#" class="text-light me-3"><i class="fab fa-whatsapp"></i></a>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 mb-4">
+                    <h6 class="fw-bold mb-3">Información de Contacto</h6>
+                    <p class="mb-2">
+                        <i class="fas fa-map-marker-alt me-2"></i>
+                        Av. Principal #123, Ciudad, País
+                    </p>
+                    <p class="mb-2">
+                        <i class="fas fa-phone me-2"></i>
+                        +1 234 567 8900
+                    </p>
+                    <p class="mb-2">
+                        <i class="fas fa-envelope me-2"></i>
+                        info@iglesiaiqv.com
+                    </p>
+                </div>
+                
+                <div class="col-lg-4 mb-4">
+                    <h6 class="fw-bold mb-3">Horarios de Servicio</h6>
+                    <p class="mb-2">
+                        <strong>Domingos:</strong> 9:00 AM y 6:00 PM
+                    </p>
+                    <p class="mb-2">
+                        <strong>Miércoles:</strong> 7:00 PM
+                    </p>
+                    <p class="mb-2">
+                        <strong>Viernes:</strong> 7:00 PM
+                    </p>
+                </div>
+            </div>
+            
+            <hr class="my-4">
+            
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <p class="mb-0">&copy; <%= new Date().getFullYear() %> Iglesia Más que Vencedores. Todos los derechos reservados.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p class="mb-0">Desarrollado con <i class="fas fa-heart text-danger"></i> para el Reino de Dios</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Custom JS -->
+    <script src="/js/main.js"></script>
+    
+    <% if (typeof additionalJS !== 'undefined') { %>
+        <% additionalJS.forEach(js => { %>
+            <script src="<%= js %>"></script>
+        <% }) %>
+    <% } %>
+</body>
+</html>

@@ -1,0 +1,82 @@
+services:
+  # Aplicación Web de la Iglesia MQV
+  mqv-web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mqv-website
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - MONGODB_URI=mongodb://mqv-mongodb:27017/iglesia_mqv
+      - JWT_SECRET=${JWT_SECRET:-tu_clave_secreta_muy_segura_cambiala_en_produccion}
+      - UPLOAD_PATH=uploads
+      - MAX_FILE_SIZE=10485760
+      - ADMIN_USERNAME=${ADMIN_USERNAME:-admin}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-admin123}
+      - ADMIN_EMAIL=${ADMIN_EMAIL:-admin@iglesiaiqv.com}
+    volumes:
+      - uploads-data:/app/uploads
+    depends_on:
+      mqv-mongodb:
+        condition: service_healthy
+    networks:
+      - mqv-network
+    healthcheck:
+      test: ["CMD", "node", "healthcheck.js"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Base de Datos MongoDB
+  mqv-mongodb:
+    image: mongo:7
+    container_name: mqv-database
+    restart: unless-stopped
+    environment:
+      - MONGO_INITDB_DATABASE=iglesia_mqv
+    volumes:
+      - mongodb-data:/data/db
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    ports:
+      - "27017:27017"
+    networks:
+      - mqv-network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+
+  # Nginx como Proxy Reverso (Opcional para producción)
+  mqv-nginx:
+    image: nginx:alpine
+    container_name: mqv-proxy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - mqv-web
+    networks:
+      - mqv-network
+    profiles:
+      - production
+
+volumes:
+  mongodb-data:
+    driver: local
+  uploads-data:
+    driver: local
+
+networks:
+  mqv-network:
+    driver: bridge

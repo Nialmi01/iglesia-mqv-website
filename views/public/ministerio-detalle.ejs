@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ministerio de <%= ministerio.nombre %> - Iglesia MQV</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="/css/style.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navegación -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="/">
+                <i class="fas fa-church me-2"></i>
+                Iglesia MQV
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Inicio</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/ministerios">Ministerios</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/acerca">Acerca</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/contacto">Contacto</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/login">
+                            <i class="fas fa-sign-in-alt me-1"></i>
+                            Admin
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenido Principal -->
+    <main class="main-content">
+
+<!-- Header Section -->
+<section class="bg-gradient-primary text-white py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb text-white">
+                        <li class="breadcrumb-item">
+                            <a href="/ministerios" class="text-white text-decoration-none">Ministerios</a>
+                        </li>
+                        <li class="breadcrumb-item active text-white"><%= ministerio.nombre %></li>
+                    </ol>
+                </nav>
+                
+                <h1 class="display-5 fw-bold mb-3">Ministerio de <%= ministerio.nombre %></h1>
+                <p class="lead mb-3"><%= ministerio.descripcion %></p>
+                
+                <% if (ministerio.versiculo) { %>
+                    <blockquote class="blockquote">
+                        <p class="mb-0 fst-italic">"<%= ministerio.versiculo %>"</p>
+                    </blockquote>
+                <% } %>
+                
+                <div class="d-flex flex-wrap gap-3 mt-4">
+                    <span class="badge bg-light text-dark px-3 py-2">
+                        <i class="fas fa-images me-1"></i>
+                        <%= totalFotos %> Fotos
+                    </span>
+                    <span class="badge bg-light text-dark px-3 py-2">
+                        <i class="fas fa-video me-1"></i>
+                        <%= totalVideos %> Videos
+                    </span>
+                </div>
+            </div>
+            <div class="col-lg-4 text-center">
+                <i class="fas fa-cross fa-5x opacity-75"></i>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Filtros -->
+<section class="py-3 bg-light border-bottom">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h5 class="mb-0">
+                    Contenido del Ministerio
+                    <span class="text-muted">(<%= pagination.totalItems %> elementos)</span>
+                </h5>
+            </div>
+            <div class="col-md-6 text-md-end">
+                <div class="btn-group" role="group">
+                    <a href="/ministerio/<%= encodeURIComponent(ministerio.nombre) %>" 
+                       class="btn <%= !filtroTipo ? 'btn-primary' : 'btn-outline-primary' %> btn-sm">
+                        <i class="fas fa-th me-1"></i>
+                        Todos
+                    </a>
+                    <a href="/ministerio/<%= encodeURIComponent(ministerio.nombre) %>?tipo=foto" 
+                       class="btn <%= filtroTipo === 'foto' ? 'btn-primary' : 'btn-outline-primary' %> btn-sm">
+                        <i class="fas fa-images me-1"></i>
+                        Fotos
+                    </a>
+                    <a href="/ministerio/<%= encodeURIComponent(ministerio.nombre) %>?tipo=video" 
+                       class="btn <%= filtroTipo === 'video' ? 'btn-primary' : 'btn-outline-primary' %> btn-sm">
+                        <i class="fas fa-video me-1"></i>
+                        Videos
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Contenido Multimedia -->
+<section class="py-5">
+    <div class="container">
+        <% if (medios && medios.length > 0) { %>
+            <div class="row">
+                <% medios.forEach((media, index) => { %>
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="card media-card border-0 shadow-sm h-100">
+                            <div class="position-relative">
+                                <% if (media.tipo === 'foto') { %>
+                                    <img src="/<%= media.archivo.path %>" 
+                                         class="card-img-top media-thumbnail" 
+                                         alt="<%= media.titulo %>"
+                                         style="height: 250px; object-fit: cover; cursor: pointer;"
+                                         data-bs-toggle="modal" 
+                                         data-bs-target="#mediaModal<%= index %>">
+                                <% } else { %>
+                                    <div class="video-thumbnail position-relative">
+                                        <video class="card-img-top" 
+                                               style="height: 250px; object-fit: cover;"
+                                               poster="" muted>
+                                            <source src="/<%= media.archivo.path %>" type="<%= media.archivo.mimetype %>">
+                                        </video>
+                                        <div class="video-play-overlay position-absolute top-50 start-50 translate-middle">
+                                            <button class="btn btn-primary btn-lg rounded-circle" 
+                                                    data-bs-toggle="modal" 
+                                                    data-bs-target="#mediaModal<%= index %>">
+                                                <i class="fas fa-play"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                <% } %>
+                                
+                                <% if (media.destacado) { %>
+                                    <span class="badge bg-warning position-absolute top-0 start-0 m-2">
+                                        <i class="fas fa-star me-1"></i>
+                                        Destacado
+                                    </span>
+                                <% } %>
+                                
+                                <span class="badge bg-dark position-absolute top-0 end-0 m-2">
+                                    <i class="fas fa-<%= media.tipo === 'foto' ? 'image' : 'video' %> me-1"></i>
+                                    <%= media.tipo === 'foto' ? 'Foto' : 'Video' %>
+                                </span>
+                            </div>
+                            
+                            <div class="card-body">
+                                <h6 class="card-title"><%= media.titulo %></h6>
+                                <% if (media.descripcion) { %>
+                                    <p class="card-text text-muted small">
+                                        <%= media.descripcion.length > 100 ? media.descripcion.substring(0, 100) + '...' : media.descripcion %>
+                                    </p>
+                                <% } %>
+                                
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <small class="text-muted">
+                                        <i class="fas fa-calendar me-1"></i>
+                                        <%= new Date(media.fechaEvento).toLocaleDateString('es-ES') %>
+                                    </small>
+                                    <button class="btn btn-primary btn-sm" 
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#mediaModal<%= index %>">
+                                        <i class="fas fa-expand-arrows-alt me-1"></i>
+                                        Ver
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Modal para cada media -->
+                    <div class="modal fade" id="mediaModal<%= index %>" tabindex="-1">
+                        <div class="modal-dialog modal-lg modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title"><%= media.titulo %></h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body text-center">
+                                    <% if (media.tipo === 'foto') { %>
+                                        <img src="/<%= media.archivo.path %>" 
+                                             class="img-fluid rounded" 
+                                             alt="<%= media.titulo %>">
+                                    <% } else { %>
+                                        <video class="w-100 rounded" controls>
+                                            <source src="/<%= media.archivo.path %>" type="<%= media.archivo.mimetype %>">
+                                            Tu navegador no soporta videos HTML5.
+                                        </video>
+                                    <% } %>
+                                    
+                                    <% if (media.descripcion) { %>
+                                        <div class="mt-3">
+                                            <p class="text-muted"><%= media.descripcion %></p>
+                                        </div>
+                                    <% } %>
+                                    
+                                    <div class="mt-3">
+                                        <small class="text-muted">
+                                            <i class="fas fa-calendar me-1"></i>
+                                            <%= new Date(media.fechaEvento).toLocaleDateString('es-ES', { 
+                                                year: 'numeric', 
+                                                month: 'long', 
+                                                day: 'numeric' 
+                                            }) %>
+                                        </small>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                        Cerrar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <% }) %>
+            </div>
+            
+            <!-- Paginación -->
+            <% if (pagination.totalPages > 1) { %>
+                <nav aria-label="Paginación" class="mt-5">
+                    <ul class="pagination justify-content-center">
+                        <% if (pagination.hasPrev) { %>
+                            <li class="page-item">
+                                <a class="page-link" href="?page=<%= pagination.currentPage - 1 %><%= filtroTipo ? '&tipo=' + filtroTipo : '' %>">
+                                    <i class="fas fa-chevron-left me-1"></i>
+                                    Anterior
+                                </a>
+                            </li>
+                        <% } %>
+                        
+                        <% for (let i = 1; i <= pagination.totalPages; i++) { %>
+                            <li class="page-item <%= pagination.currentPage === i ? 'active' : '' %>">
+                                <a class="page-link" href="?page=<%= i %><%= filtroTipo ? '&tipo=' + filtroTipo : '' %>">
+                                    <%= i %>
+                                </a>
+                            </li>
+                        <% } %>
+                        
+                        <% if (pagination.hasNext) { %>
+                            <li class="page-item">
+                                <a class="page-link" href="?page=<%= pagination.currentPage + 1 %><%= filtroTipo ? '&tipo=' + filtroTipo : '' %>">
+                                    Siguiente
+                                    <i class="fas fa-chevron-right ms-1"></i>
+                                </a>
+                            </li>
+                        <% } %>
+                    </ul>
+                </nav>
+            <% } %>
+            
+        <% } else { %>
+            <!-- Estado vacío -->
+            <div class="text-center py-5">
+                <i class="fas fa-images fa-4x text-muted mb-4"></i>
+                <h4 class="text-muted">No hay contenido disponible</h4>
+                <p class="text-muted">
+                    Este ministerio aún no ha subido fotos o videos. 
+                    ¡Mantente atento para próximo contenido!
+                </p>
+                <a href="/ministerios" class="btn btn-primary">
+                    <i class="fas fa-arrow-left me-2"></i>
+                    Volver a Ministerios
+                </a>
+            </div>
+        <% } %>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<% if (medios && medios.length > 0) { %>
+<section class="py-5 bg-light">
+    <div class="container text-center">
+        <h3 class="mb-4">¿Te interesa formar parte de este ministerio?</h3>
+        <p class="lead text-muted mb-4">
+            Si sientes el llamado a servir en el Ministerio de <%= ministerio.nombre %>, 
+            nos encantaría conocerte y ayudarte a encontrar tu lugar de servicio.
+        </p>
+        <div class="d-flex justify-content-center gap-3 flex-wrap">
+            <a href="/contacto" class="btn btn-primary btn-lg">
+                <i class="fas fa-envelope me-2"></i>
+                Contáctanos
+            </a>
+            <a href="/ministerios" class="btn btn-outline-primary btn-lg">
+                <i class="fas fa-list me-2"></i>
+                Ver otros Ministerios
+            </a>
+        </div>
+    </div>
+</section>
+<% } %>
+
+<style>
+.bg-gradient-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.media-card {
+    transition: all 0.3s ease;
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.media-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1) !important;
+}
+
+.media-thumbnail {
+    transition: transform 0.3s ease;
+}
+
+.media-card:hover .media-thumbnail {
+    transform: scale(1.05);
+}
+
+.video-thumbnail {
+    position: relative;
+    overflow: hidden;
+}
+
+.video-play-overlay {
+    background: rgba(0, 0, 0, 0.6);
+    border-radius: 50%;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.video-thumbnail:hover .video-play-overlay {
+    opacity: 1;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+    content: "›";
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.pagination .page-link {
+    border-radius: 8px;
+    margin: 0 2px;
+    border: none;
+    color: #667eea;
+}
+
+.pagination .page-item.active .page-link {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-color: transparent;
+}
+
+.btn-group .btn {
+    border-radius: 20px;
+    margin: 0 2px;
+}
+
+.badge {
+    font-size: 0.75em;
+}
+
+.modal-content {
+    border-radius: 15px;
+    border: none;
+}
+
+.modal-header {
+    border-bottom: 1px solid #e9ecef;
+    background: #f8f9fa;
+}
+
+.modal-footer {
+    border-top: 1px solid #e9ecef;
+    background: #f8f9fa;
+}
+
+@media (max-width: 768px) {
+    .display-5 {
+        font-size: 2rem;
+    }
+    
+    .lead {
+        font-size: 1.1rem;
+    }
+    
+    .btn-group {
+        display: block;
+    }
+    
+    .btn-group .btn {
+        display: block;
+        width: 100%;
+        margin: 2px 0;
+    }
+}
+</style>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-4">
+                    <h5 class="fw-bold mb-3">
+                        <i class="fas fa-church me-2"></i>
+                        Iglesia MQV
+                    </h5>
+                    <p class="text-muted">
+                        Más que Vencedores - Un lugar donde Dios transforma vidas y fortalece familias en Cristo.
+                    </p>
+                </div>
+                <div class="col-lg-4 mb-4">
+                    <h5 class="fw-bold mb-3">Enlaces Rápidos</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="/" class="text-decoration-none text-muted">Inicio</a></li>
+                        <li><a href="/ministerios" class="text-decoration-none text-muted">Ministerios</a></li>
+                        <li><a href="/acerca" class="text-decoration-none text-muted">Acerca</a></li>
+                        <li><a href="/contacto" class="text-decoration-none text-muted">Contacto</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-4 mb-4">
+                    <h5 class="fw-bold mb-3">Contacto</h5>
+                    <p class="text-muted mb-2">
+                        <i class="fas fa-map-marker-alt me-2"></i>
+                        Av. Principal #123, Ciudad, País
+                    </p>
+                    <p class="text-muted mb-2">
+                        <i class="fas fa-phone me-2"></i>
+                        +1 234 567 8900
+                    </p>
+                    <p class="text-muted">
+                        <i class="fas fa-envelope me-2"></i>
+                        info@iglesiamqv.com
+                    </p>
+                </div>
+            </div>
+            <hr class="border-secondary">
+            <div class="text-center">
+                <p class="mb-0 text-muted">
+                    &copy; 2024 Iglesia Más que Vencedores. Todos los derechos reservados.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <!-- Custom JS -->
+    <script src="/js/main.js"></script>
+</body>
+</html>

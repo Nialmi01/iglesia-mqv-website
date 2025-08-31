@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="/css/style.css" rel="stylesheet">
+    <link href="/css/admin.css" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif !important;
+            background-color: #f8f9fa !important;
+        }
+        
+        .navbar.bg-primary {
+            background: linear-gradient(135deg, #3a4a5c 0%, #4a5a6d 100%) !important;
+            box-shadow: 0 2px 15px rgba(58, 74, 92, 0.15) !important;
+        }
+        
+        #sidebar {
+            background: white !important;
+            border-right: 1px solid rgba(58, 74, 92, 0.1) !important;
+            box-shadow: 2px 0 10px rgba(58, 74, 92, 0.05) !important;
+            min-height: calc(100vh - 56px) !important;
+        }
+        
+        #sidebar .nav-link {
+            color: #6c757d !important;
+            padding: 0.75rem 1rem !important;
+            border-radius: 8px !important;
+            margin: 0.25rem 0.5rem !important;
+            transition: all 0.3s ease !important;
+            font-weight: 500 !important;
+        }
+        
+        #sidebar .nav-link:hover {
+            background: rgba(58, 74, 92, 0.05) !important;
+            color: #3a4a5c !important;
+            text-decoration: none;
+        }
+        
+        #sidebar .nav-link.active {
+            background: linear-gradient(135deg, #3a4a5c 0%, #4a5a6d 100%) !important;
+            color: white !important;
+        }
+    </style>
+</head>
+<body class="admin-body">
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold" href="/admin/dashboard">
+                <i class="fas fa-church me-2"></i>
+                Admin MQV
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user me-1"></i>
+                            <%= user.username %>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><span class="dropdown-header">Sesión activa</span></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/" target="_blank">
+                                <i class="fas fa-globe me-2"></i>Ver sitio web
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/admin/logout">
+                                <i class="fas fa-sign-out-alt me-2"></i>Cerrar sesión
+                            </a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-white sidebar collapse">
+                <div class="position-sticky pt-3">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin/dashboard">
+                                <i class="fas fa-tachometer-alt me-2"></i>
+                                Dashboard
+                            </a>
+                        </li>
+                        <% if (user.role === 'admin') { %>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin/usuarios">
+                                <i class="fas fa-users me-2"></i>
+                                Usuarios
+                            </a>
+                        </li>
+                        <% } %>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="/admin/medios">
+                                <i class="fas fa-images me-2"></i>
+                                Medios
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Main content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div id="notifications"></div>
+
+                <!-- Header -->
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
+                    <h1 class="h2 mb-0">
+                        <i class="fas fa-images me-2 text-primary"></i>
+                        Gestión de Medios
+                    </h1>
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        <div class="btn-group me-2">
+                            <button type="button" class="btn btn-primary btn-sm" onclick="showUploadModal()">
+                                <i class="fas fa-upload me-1"></i>
+                                Subir Media
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Filtros -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <select class="form-select" id="ministerioFilter" onchange="aplicarFiltros()">
+                            <option value="">Todos los Ministerios</option>
+                            <option value="Administración" <%= filtros.ministerio === 'Administración' ? 'selected' : '' %>>Administración</option>
+                            <option value="Adoración y Música" <%= filtros.ministerio === 'Adoración y Música' ? 'selected' : '' %>>Adoración y Música</option>
+                            <option value="Jóvenes" <%= filtros.ministerio === 'Jóvenes' ? 'selected' : '' %>>Jóvenes</option>
+                            <option value="Niños" <%= filtros.ministerio === 'Niños' ? 'selected' : '' %>>Niños</option>
+                            <option value="Mujeres" <%= filtros.ministerio === 'Mujeres' ? 'selected' : '' %>>Mujeres</option>
+                            <option value="Hombres" <%= filtros.ministerio === 'Hombres' ? 'selected' : '' %>>Hombres</option>
+                            <option value="Intercesión" <%= filtros.ministerio === 'Intercesión' ? 'selected' : '' %>>Intercesión</option>
+                            <option value="Evangelismo" <%= filtros.ministerio === 'Evangelismo' ? 'selected' : '' %>>Evangelismo</option>
+                            <option value="Misiones" <%= filtros.ministerio === 'Misiones' ? 'selected' : '' %>>Misiones</option>
+                            <option value="Diaconos" <%= filtros.ministerio === 'Diaconos' ? 'selected' : '' %>>Diaconos</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <select class="form-select" id="tipoFilter" onchange="aplicarFiltros()">
+                            <option value="">Todos los Tipos</option>
+                            <option value="imagen" <%= filtros.tipo === 'imagen' ? 'selected' : '' %>>Imágenes</option>
+                            <option value="video" <%= filtros.tipo === 'video' ? 'selected' : '' %>>Videos</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Media Grid -->
+                <div id="mediaGrid" class="row g-4">
+                    <% if (medios && medios.length > 0) { %>
+                        <% medios.forEach(media => { %>
+                            <div class="col-md-6 col-lg-4 media-item" data-ministerio="<%= media.ministerio %>" data-tipo="<%= media.tipo %>">
+                                <div class="card h-100">
+                                    <% if (media.tipo === 'imagen') { %>
+                                        <img src="<%= media.url %>" class="card-img-top" alt="<%= media.titulo %>" style="height: 200px; object-fit: cover;">
+                                    <% } else { %>
+                                        <div class="bg-dark d-flex align-items-center justify-content-center text-white" style="height: 200px;">
+                                            <div class="text-center">
+                                                <i class="fas fa-play fa-3x mb-2"></i>
+                                                <div>Video</div>
+                                            </div>
+                                        </div>
+                                    <% } %>
+                                    <div class="card-body">
+                                        <h5 class="card-title"><%= media.titulo %></h5>
+                                        <p class="card-text">
+                                            <small class="text-muted">
+                                                <i class="fas fa-church me-1"></i>
+                                                <%= media.ministerio %>
+                                            </small>
+                                        </p>
+                                        <p class="card-text">
+                                            <small class="text-muted">
+                                                <i class="fas fa-calendar me-1"></i>
+                                                <%= new Date(media.createdAt).toLocaleDateString('es-ES') %>
+                                            </small>
+                                        </p>
+                                        <% if (media.destacado) { %>
+                                        <p class="card-text">
+                                            <span class="badge bg-warning">
+                                                <i class="fas fa-star me-1"></i>Destacado
+                                            </span>
+                                        </p>
+                                        <% } %>
+                                    </div>
+                                    <div class="card-footer">
+                                        <div class="btn-group w-100">
+                                            <button class="btn btn-sm btn-outline-primary" onclick="viewMedia('<%= media._id %>', '<%= media.tipo %>', '<%= media.url %>', '<%= media.titulo %>')">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <% if (user.role === 'admin' || user.ministerio === media.ministerio) { %>
+                                            <button class="btn btn-sm btn-outline-warning" onclick="toggleDestacado('<%= media._id %>', <%= media.destacado ? 'true' : 'false' %>)">
+                                                <i class="fas fa-star"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-danger" onclick="deleteMedia('<%= media._id %>')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                            <% } %>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        <% }) %>
+                    <% } else { %>
+                        <div class="col-12">
+                            <div class="text-center py-5">
+                                <i class="fas fa-images fa-3x text-muted mb-3"></i>
+                                <h5 class="text-muted">No hay medios disponibles</h5>
+                                <p class="text-muted">Sube el primer contenido multimedia para tu ministerio</p>
+                                <button class="btn btn-primary" onclick="showUploadModal()">
+                                    <i class="fas fa-upload me-2"></i>
+                                    Subir Media
+                                </button>
+                            </div>
+                        </div>
+                    <% } %>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modal para subir media -->
+    <div class="modal fade" id="uploadModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-upload me-2"></i>
+                        Subir Media
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="uploadForm" enctype="multipart/form-data">
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="titulo" class="form-label">Título</label>
+                                <input type="text" class="form-control" id="titulo" name="titulo" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="ministerio" class="form-label">Ministerio</label>
+                                <select class="form-select" id="ministerio" name="ministerio" required>
+                                    <option value="">Seleccionar Ministerio</option>
+                                    <% if (user.role === 'admin') { %>
+                                        <option value="Administración">Administración</option>
+                                        <option value="Adoración y Música">Adoración y Música</option>
+                                        <option value="Jóvenes">Jóvenes</option>
+                                        <option value="Niños">Niños</option>
+                                        <option value="Mujeres">Mujeres</option>
+                                        <option value="Hombres">Hombres</option>
+                                        <option value="Intercesión">Intercesión</option>
+                                        <option value="Evangelismo">Evangelismo</option>
+                                        <option value="Misiones">Misiones</option>
+                                        <option value="Diaconos">Diaconos</option>
+                                    <% } else { %>
+                                        <option value="<%= user.ministerio %>" selected><%= user.ministerio %></option>
+                                    <% } %>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="descripcion" class="form-label">Descripción</label>
+                            <textarea class="form-control" id="descripcion" name="descripcion" rows="3"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="archivos" class="form-label">Archivos (máximo 5)</label>
+                            <input type="file" class="form-control" id="archivos" name="archivos" multiple accept="image/*,video/*" required>
+                            <div class="form-text">Formatos soportados: JPG, PNG, GIF, MP4, MOV, AVI</div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="destacado" name="destacado">
+                                <label class="form-check-label" for="destacado">
+                                    Marcar como destacado
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-upload me-2"></i>Subir Media
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para ver media -->
+    <div class="modal fade" id="viewMediaModal" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="mediaModalTitle">Ver Media</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center" id="mediaModalBody">
+                    <!-- El contenido se carga dinámicamente -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <!-- Custom JS -->
+    <script src="/js/main.js"></script>
+    
+    <script>
+        // Función para mostrar notificaciones
+        function showNotification(message, type = 'success') {
+            if (typeof Utils !== 'undefined' && Utils.showNotification) {
+                Utils.showNotification(message, type);
+                return;
+            }
+            
+            const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
+            const notification = `
+                <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+            document.getElementById('notifications').innerHTML = notification;
+            
+            setTimeout(() => {
+                const alert = document.querySelector('.alert');
+                if (alert) alert.remove();
+            }, 5000);
+        }
+
+        function showUploadModal() {
+            new bootstrap.Modal(document.getElementById('uploadModal')).show();
+        }
+
+        function aplicarFiltros() {
+            const ministerio = document.getElementById('ministerioFilter').value;
+            const tipo = document.getElementById('tipoFilter').value;
+            
+            const params = new URLSearchParams();
+            if (ministerio) params.set('ministerio', ministerio);
+            if (tipo) params.set('tipo', tipo);
+            
+            window.location.href = `/admin/medios?${params.toString()}`;
+        }
+
+        function viewMedia(id, tipo, url, titulo) {
+            document.getElementById('mediaModalTitle').textContent = titulo;
+            
+            let content = '';
+            if (tipo === 'imagen') {
+                content = `<img src="${url}" class="img-fluid rounded" alt="${titulo}">`;
+            } else {
+                content = `
+                    <video class="w-100 rounded" controls>
+                        <source src="${url}">
+                        Tu navegador no soporta videos HTML5.
+                    </video>
+                `;
+            }
+            
+            document.getElementById('mediaModalBody').innerHTML = content;
+            new bootstrap.Modal(document.getElementById('viewMediaModal')).show();
+        }
+
+        function toggleDestacado(id, currentState) {
+            fetch(`/admin/medios/${id}/destacado`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ destacado: !currentState })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showNotification(data.destacado ? 'Media marcado como destacado' : 'Media desmarcado como destacado');
+                    setTimeout(() => location.reload(), 1500);
+                } else {
+                    showNotification(data.message, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification('Error actualizando estado', 'error');
+            });
+        }
+
+        function deleteMedia(id) {
+            if (confirm('¿Estás seguro de que quieres eliminar este contenido?')) {
+                fetch(`/admin/medios/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showNotification('Contenido eliminado exitosamente');
+                        setTimeout(() => location.reload(), 1500);
+                    } else {
+                        showNotification(data.message, 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showNotification('Error eliminando contenido', 'error');
+                });
+            }
+        }
+
+        // Manejar envío del formulario de upload
+        document.getElementById('uploadForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const uploadButton = this.querySelector('button[type="submit"]');
+            
+            uploadButton.disabled = true;
+            uploadButton.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Subiendo...';
+            
+            fetch('/admin/medios', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showNotification('Media subido exitosamente');
+                    bootstrap.Modal.getInstance(document.getElementById('uploadModal')).hide();
+                    setTimeout(() => location.reload(), 1500);
+                } else {
+                    showNotification(data.message, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification('Error subiendo media', 'error');
+            })
+            .finally(() => {
+                uploadButton.disabled = false;
+                uploadButton.innerHTML = '<i class="fas fa-upload me-2"></i>Subir Media';
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="/css/style.css" rel="stylesheet">
+    <link href="/css/admin.css" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif !important;
+            background-color: #f8f9fa !important;
+        }
+        
+        .navbar.bg-primary {
+            background: linear-gradient(135deg, #3a4a5c 0%, #4a5a6d 100%) !important;
+            box-shadow: 0 2px 15px rgba(58, 74, 92, 0.15) !important;
+        }
+        
+        #sidebar {
+            background: white !important;
+            border-right: 1px solid rgba(58, 74, 92, 0.1) !important;
+            box-shadow: 2px 0 10px rgba(58, 74, 92, 0.05) !important;
+            min-height: calc(100vh - 56px) !important;
+        }
+        
+        #sidebar .nav-link {
+            color: #6c757d !important;
+            padding: 0.75rem 1rem !important;
+            border-radius: 8px !important;
+            margin: 0.25rem 0.5rem !important;
+            transition: all 0.3s ease !important;
+            font-weight: 500 !important;
+        }
+        
+        #sidebar .nav-link:hover {
+            background: rgba(58, 74, 92, 0.05) !important;
+            color: #3a4a5c !important;
+            text-decoration: none;
+        }
+        
+        #sidebar .nav-link.active {
+            background: linear-gradient(135deg, #3a4a5c 0%, #4a5a6d 100%) !important;
+            color: white !important;
+        }
+        
+        .icon-circle {
+            width: 3rem;
+            height: 3rem;
+            border-radius: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        
+        .text-xs {
+            font-size: 0.75rem;
+        }
+        
+        .font-weight-bold {
+            font-weight: 700 !important;
+        }
+        
+        .card {
+            border-radius: 15px;
+            transition: transform 0.2s;
+        }
+        
+        .card:hover {
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body class="admin-body">
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold" href="/admin/dashboard">
+                <i class="fas fa-church me-2"></i>
+                Admin MQV
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user me-1"></i>
+                            <%= user.username %>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><span class="dropdown-header">Sesión activa</span></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/" target="_blank">
+                                <i class="fas fa-globe me-2"></i>Ver sitio web
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/admin/logout">
+                                <i class="fas fa-sign-out-alt me-2"></i>Cerrar sesión
+                            </a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-white sidebar collapse">
+                <div class="position-sticky pt-3">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="/admin/dashboard">
+                                <i class="fas fa-tachometer-alt me-2"></i>
+                                Dashboard
+                            </a>
+                        </li>
+                        <% if (user.role === 'admin') { %>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin/usuarios">
+                                <i class="fas fa-users me-2"></i>
+                                Usuarios
+                            </a>
+                        </li>
+                        <% } %>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin/medios">
+                                <i class="fas fa-images me-2"></i>
+                                Medios
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Main content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div id="notifications"></div>
+
+                <!-- Header del Dashboard -->
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
+                    <h1 class="h2 mb-0">
+                        <i class="fas fa-tachometer-alt me-2 text-primary"></i>
+                        Dashboard
+                    </h1>
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        <div class="btn-group me-2">
+                            <button type="button" class="btn btn-outline-primary btn-sm" onclick="window.print()">
+                                <i class="fas fa-download me-1"></i>
+                                Exportar
+                            </button>
+                            <button type="button" class="btn btn-primary btn-sm" onclick="window.location.reload()">
+                                <i class="fas fa-refresh me-1"></i>
+                                Actualizar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="row g-4 mb-5">
+                    <div class="col-xl-3 col-md-6">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-body p-4">
+                                <div class="d-flex align-items-center">
+                                    <div class="flex-grow-1">
+                                        <div class="text-xs fw-bold text-primary text-uppercase mb-2">
+                                            Total Usuarios
+                                        </div>
+                                        <div class="h4 mb-0 fw-bold text-gray-800">
+                                            <%= totalUsuarios %>
+                                        </div>
+                                    </div>
+                                    <div class="ms-3">
+                                        <div class="icon-circle bg-primary bg-gradient text-white">
+                                            <i class="fas fa-users"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-3 col-md-6">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-body p-4">
+                                <div class="d-flex align-items-center">
+                                    <div class="flex-grow-1">
+                                        <div class="text-xs fw-bold text-success text-uppercase mb-2">
+                                            Total Contenido
+                                        </div>
+                                        <div class="h4 mb-0 fw-bold text-gray-800">
+                                            <%= totalMedias %>
+                                        </div>
+                                    </div>
+                                    <div class="ms-3">
+                                        <div class="icon-circle bg-success bg-gradient text-white">
+                                            <i class="fas fa-images"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-3 col-md-6">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-body p-4">
+                                <div class="d-flex align-items-center">
+                                    <div class="flex-grow-1">
+                                        <div class="text-xs fw-bold text-info text-uppercase mb-2">
+                                            Ministerios Activos
+                                        </div>
+                                        <div class="h4 mb-0 fw-bold text-gray-800">
+                                            <%= mediasPorMinisterio.length %>
+                                        </div>
+                                    </div>
+                                    <div class="ms-3">
+                                        <div class="icon-circle bg-info bg-gradient text-white">
+                                            <i class="fas fa-church"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-3 col-md-6">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-body p-4">
+                                <div class="d-flex align-items-center">
+                                    <div class="flex-grow-1">
+                                        <div class="text-xs fw-bold text-warning text-uppercase mb-2">
+                                            Mi Ministerio
+                                        </div>
+                                        <div class="h6 mb-0 fw-bold text-gray-800 text-truncate">
+                                            <%= user.ministerio %>
+                                        </div>
+                                    </div>
+                                    <div class="ms-3">
+                                        <div class="icon-circle bg-warning bg-gradient text-dark">
+                                            <i class="fas fa-user-tag"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!-- Acciones Rápidas -->
+                    <div class="col-xl-4 col-lg-5">
+                        <div class="card shadow-sm mb-4">
+                            <div class="card-header py-3">
+                                <h6 class="m-0 font-weight-bold text-primary">
+                                    <i class="fas fa-bolt me-2"></i>
+                                    Acciones Rápidas
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-grid gap-2">
+                                    <a href="/admin/medios" class="btn btn-outline-primary">
+                                        <i class="fas fa-upload me-2"></i>
+                                        Subir Contenido
+                                    </a>
+                                    
+                                    <% if (user.role === 'admin') { %>
+                                    <a href="/admin/usuarios" class="btn btn-outline-secondary">
+                                        <i class="fas fa-user-plus me-2"></i>
+                                        Crear Usuario
+                                    </a>
+                                    <% } %>
+                                    
+                                    <a href="/ministerios" target="_blank" class="btn btn-outline-info">
+                                        <i class="fas fa-external-link-alt me-2"></i>
+                                        Ver Mi Ministerio
+                                    </a>
+                                    
+                                    <a href="/" target="_blank" class="btn btn-outline-success">
+                                        <i class="fas fa-globe me-2"></i>
+                                        Ver Sitio Web
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Información del Usuario -->
+                        <div class="card shadow-sm mb-4">
+                            <div class="card-header py-3">
+                                <h6 class="m-0 font-weight-bold text-primary">
+                                    <i class="fas fa-user me-2"></i>
+                                    Mi Perfil
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <p class="mb-2">
+                                    <strong>Usuario:</strong> <%= user.username %>
+                                </p>
+                                <p class="mb-2">
+                                    <strong>Email:</strong> <%= user.email %>
+                                </p>
+                                <p class="mb-2">
+                                    <strong>Rol:</strong> 
+                                    <span class="badge bg-<%= user.role === 'admin' ? 'primary' : 'secondary' %>">
+                                        <%= user.role === 'admin' ? 'Administrador' : 'Usuario de Ministerio' %>
+                                    </span>
+                                </p>
+                                <p class="mb-2">
+                                    <strong>Ministerio:</strong> <%= user.ministerio %>
+                                </p>
+                                <p class="mb-0 text-muted">
+                                    <small>
+                                        <strong>Último acceso:</strong><br>
+                                        <%= new Date(user.ultimoAcceso).toLocaleString('es-ES') %>
+                                    </small>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Gráfico de Contenido por Ministerio -->
+                    <div class="col-xl-8 col-lg-7">
+                        <div class="card shadow-sm mb-4">
+                            <div class="card-header py-3">
+                                <h6 class="m-0 font-weight-bold text-primary">
+                                    <i class="fas fa-chart-bar me-2"></i>
+                                    Contenido por Ministerio
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <% if (mediasPorMinisterio.length > 0) { %>
+                                    <div class="chart-container" style="position: relative; height: 300px;">
+                                        <canvas id="ministeriosChart"></canvas>
+                                    </div>
+                                <% } else { %>
+                                    <div class="text-center text-muted py-4">
+                                        <i class="fas fa-chart-bar fa-3x mb-3"></i>
+                                        <p>No hay datos para mostrar</p>
+                                    </div>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contenido Reciente -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card shadow-sm">
+                            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                <h6 class="m-0 font-weight-bold text-primary">
+                                    <i class="fas fa-clock me-2"></i>
+                                    Contenido Reciente
+                                </h6>
+                                <a href="/admin/medios" class="btn btn-sm btn-primary">
+                                    Ver todo
+                                </a>
+                            </div>
+                            <div class="card-body">
+                                <% if (mediasRecientes.length > 0) { %>
+                                    <div class="table-responsive">
+                                        <table class="table table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>Tipo</th>
+                                                    <th>Título</th>
+                                                    <th>Ministerio</th>
+                                                    <th>Subido por</th>
+                                                    <th>Fecha</th>
+                                                    <th>Acciones</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <% mediasRecientes.forEach(media => { %>
+                                                    <tr>
+                                                        <td>
+                                                            <span class="badge bg-<%= media.tipo === 'imagen' ? 'info' : 'warning' %>">
+                                                                <i class="fas fa-<%= media.tipo === 'imagen' ? 'image' : 'video' %> me-1"></i>
+                                                                <%= media.tipo === 'imagen' ? 'Imagen' : 'Video' %>
+                                                            </span>
+                                                        </td>
+                                                        <td>
+                                                            <%= media.titulo.length > 30 ? media.titulo.substring(0, 30) + '...' : media.titulo %>
+                                                            <% if (media.destacado) { %>
+                                                                <i class="fas fa-star text-warning ms-1" title="Destacado"></i>
+                                                            <% } %>
+                                                        </td>
+                                                        <td><%= media.ministerio %></td>
+                                                        <td><%= media.subidoPor ? media.subidoPor.username : 'N/A' %></td>
+                                                        <td>
+                                                            <small class="text-muted">
+                                                                <%= new Date(media.createdAt).toLocaleDateString('es-ES') %>
+                                                            </small>
+                                                        </td>
+                                                        <td>
+                                                            <div class="btn-group btn-group-sm">
+                                                                <button class="btn btn-outline-primary btn-sm" 
+                                                                        onclick="viewMedia('<%= media._id %>', '<%= media.tipo %>', '<%= media.url %>', '<%= media.titulo %>')">
+                                                                    <i class="fas fa-eye"></i>
+                                                                </button>
+                                                                <% if (user.role === 'admin' || user.ministerio === media.ministerio) { %>
+                                                                <button class="btn btn-outline-danger btn-sm" 
+                                                                        onclick="deleteMedia('<%= media._id %>')">
+                                                                    <i class="fas fa-trash"></i>
+                                                                </button>
+                                                                <% } %>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                <% }) %>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                <% } else { %>
+                                    <div class="text-center text-muted py-4">
+                                        <i class="fas fa-images fa-3x mb-3"></i>
+                                        <p>No hay contenido reciente</p>
+                                        <a href="/admin/medios" class="btn btn-primary">
+                                            <i class="fas fa-upload me-2"></i>
+                                            Subir primer contenido
+                                        </a>
+                                    </div>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Custom JS -->
+    <script src="/js/main.js"></script>
+    
+    <script>
+        // Configurar gráfico de ministerios
+        <% if (mediasPorMinisterio.length > 0) { %>
+        document.addEventListener('DOMContentLoaded', function() {
+            const ctx = document.getElementById('ministeriosChart').getContext('2d');
+            const ministeriosChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: [
+                        <% mediasPorMinisterio.forEach(item => { %>
+                            '<%= item._id %>',
+                        <% }) %>
+                    ],
+                    datasets: [{
+                        label: 'Cantidad de Contenido',
+                        data: [
+                            <% mediasPorMinisterio.forEach(item => { %>
+                                <%= item.total %>,
+                            <% }) %>
+                        ],
+                        backgroundColor: 'rgba(58, 74, 92, 0.8)',
+                        borderColor: 'rgba(58, 74, 92, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        });
+        <% } %>
+
+        // Función para mostrar notificaciones
+        function showNotification(message, type = 'success') {
+            // Si existe Utils.showNotification, usarlo, sino crear uno propio
+            if (typeof Utils !== 'undefined' && Utils.showNotification) {
+                Utils.showNotification(message, type);
+                return;
+            }
+            
+            const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
+            const notification = `
+                <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+            document.getElementById('notifications').innerHTML = notification;
+            
+            setTimeout(() => {
+                const alert = document.querySelector('.alert');
+                if (alert) {
+                    alert.remove();
+                }
+            }, 5000);
+        }
+
+        // Función para ver media
+        function viewMedia(id, tipo, path, titulo) {
+            alert('Funcionalidad de vista previa en desarrollo. URL: ' + path);
+        }
+
+        // Función para eliminar media
+        function deleteMedia(id) {
+            if (confirm('¿Estás seguro de que quieres eliminar este contenido?')) {
+                fetch(`/admin/medios/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showNotification('Contenido eliminado exitosamente');
+                        setTimeout(() => {
+                            location.reload();
+                        }, 1500);
+                    } else {
+                        showNotification(data.message, 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showNotification('Error eliminando contenido', 'error');
+                });
+            }
+        }
+    </script>
+</body>
+</html>

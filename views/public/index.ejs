@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iglesia Más que Vencedores (MQV) - Tu Casa</title>
+    <meta name="description" content="Iglesia Más que Vencedores - Un lugar donde Dios transforma vidas, fortalece familias y edifica comunidades en Cristo.">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="/css/style.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navegación -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="/">
+                <i class="fas fa-church me-2"></i>
+                Iglesia MQV
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/">Inicio</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/ministerios">Ministerios</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/acerca">Acerca</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/contacto">Contacto</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/login">
+                            <i class="fas fa-sign-in-alt me-1"></i>
+                            Admin
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenido Principal -->
+    <main class="main-content page-transition">
+
+<!-- Hero Section -->
+<section class="hero-section bg-gradient-primary text-white">
+    <div class="container">
+        <div class="row align-items-center py-5">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold mb-4">
+                    Bienvenido a tu Casa
+                </h1>
+                <p class="lead mb-4">
+                    Iglesia Más que Vencedores (MQV) - Un lugar donde Dios transforma vidas, 
+                    fortalece familias y edifica comunidades en Cristo.
+                </p>
+                <div class="d-flex flex-wrap gap-3">
+                    <a href="/ministerios" class="btn btn-light btn-lg">
+                        <i class="fas fa-users me-2"></i>
+                        Conoce nuestros Ministerios
+                    </a>
+                    <a href="/contacto" class="btn btn-outline-light btn-lg">
+                        <i class="fas fa-map-marker-alt me-2"></i>
+                        Visitanos
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6 text-center">
+                <div class="hero-image">
+                    <i class="fas fa-church display-1 opacity-75"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Medios Destacados -->
+<% if (mediosDestacados && mediosDestacados.length > 0) { %>
+<section class="py-5 bg-light">
+    <div class="container">
+        <h2 class="text-center mb-5">Momentos Especiales</h2>
+        
+        <div id="mediasCarousel" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-indicators">
+                <% mediosDestacados.forEach((media, index) => { %>
+                    <button type="button" data-bs-target="#mediasCarousel" data-bs-slide-to="<%= index %>" 
+                            class="<%= index === 0 ? 'active' : '' %>"></button>
+                <% }) %>
+            </div>
+            
+            <div class="carousel-inner rounded">
+                <% mediosDestacados.forEach((media, index) => { %>
+                    <div class="carousel-item <%= index === 0 ? 'active' : '' %>">
+                        <% if (media.tipo === 'foto') { %>
+                            <img src="/<%= media.archivo.path %>" class="d-block w-100" style="height: 400px; object-fit: cover;" alt="<%= media.titulo %>">
+                        <% } else { %>
+                            <video class="d-block w-100" style="height: 400px; object-fit: cover;" controls>
+                                <source src="/<%= media.archivo.path %>" type="<%= media.archivo.mimetype %>">
+                                Tu navegador no soporta videos HTML5.
+                            </video>
+                        <% } %>
+                        
+                        <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-75 rounded p-3">
+                            <h5><%= media.titulo %></h5>
+                            <p><%= media.descripcion || '' %></p>
+                            <small class="text-muted">Ministerio: <%= media.ministerio %></small>
+                        </div>
+                    </div>
+                <% }) %>
+            </div>
+            
+            <button class="carousel-control-prev" type="button" data-bs-target="#mediasCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon"></span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#mediasCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon"></span>
+            </button>
+        </div>
+    </div>
+</section>
+<% } %>
+
+<!-- Misión y Visión -->
+<section class="content-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6 mb-4">
+                <div class="unified-card">
+                    <div class="icon-wrapper">
+                        <i class="fas fa-bullseye"></i>
+                    </div>
+                    <h3 class="card-title mb-4 text-primary">Nuestra Misión</h3>
+                    <p class="card-text">
+                        <%= infoIglesia.mision %>
+                    </p>
+                </div>
+            </div>
+            
+            <div class="col-lg-6 mb-4">
+                <div class="unified-card">
+                    <div class="icon-wrapper">
+                        <i class="fas fa-eye"></i>
+                    </div>
+                    <h3 class="card-title mb-4 text-primary">Nuestra Visión</h3>
+                    <p class="card-text">
+                        <%= infoIglesia.vision %>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Ministerios Destacados -->
+<section class="content-section">
+    <div class="container">
+        <h2 class="text-center mb-5 text-primary">Nuestros Ministerios</h2>
+        
+        <div class="row">
+            <% 
+            const ministeriosDestacados = [
+                { nombre: 'Adoración y Música', icono: 'fas fa-music', descripcion: 'Adoramos a Dios con música y cantos' },
+                { nombre: 'Jóvenes', icono: 'fas fa-users', descripcion: 'Formando la próxima generación' },
+                { nombre: 'Niños', icono: 'fas fa-child', descripcion: 'Los pequeños también son importantes' },
+                { nombre: 'Evangelismo', icono: 'fas fa-cross', descripcion: 'Llevando el mensaje de salvación' }
+            ];
+            %>
+            
+            <% ministeriosDestacados.forEach(ministerio => { %>
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="unified-card ministerio-card">
+                        <div class="icon-wrapper">
+                            <i class="<%= ministerio.icono %>"></i>
+                        </div>
+                        <h5 class="card-title"><%= ministerio.nombre %></h5>
+                        <p class="card-text text-muted mb-3"><%= ministerio.descripcion %></p>
+                        <a href="/ministerio/<%= encodeURIComponent(ministerio.nombre) %>" class="btn btn-primary">
+                            Ver más
+                        </a>
+                    </div>
+                </div>
+            <% }) %>
+        </div>
+        
+        <div class="text-center mt-4">
+            <a href="/ministerios" class="btn btn-primary btn-lg">
+                <i class="fas fa-list me-2"></i>
+                Ver todos los Ministerios
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Ubicación y Contacto -->
+<section class="py-5">
+    <div class="container">
+        <h2 class="text-center mb-5">Visitanos</h2>
+        
+        <div class="row">
+            <div class="col-lg-6 mb-4">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body p-4">
+                        <h4 class="card-title mb-4">
+                            <i class="fas fa-map-marker-alt text-primary me-2"></i>
+                            Ubicación
+                        </h4>
+                        
+                        <p class="mb-3">
+                            <strong>Dirección:</strong><br>
+                            <%= infoIglesia.direccion %>
+                        </p>
+                        
+                        <p class="mb-3">
+                            <strong>Teléfono:</strong><br>
+                            <a href="tel:<%= infoIglesia.telefono %>" class="text-decoration-none">
+                                <%= infoIglesia.telefono %>
+                            </a>
+                        </p>
+                        
+                        <p class="mb-3">
+                            <strong>Email:</strong><br>
+                            <a href="mailto:<%= infoIglesia.email %>" class="text-decoration-none">
+                                <%= infoIglesia.email %>
+                            </a>
+                        </p>
+                        
+                        <a href="/contacto" class="btn btn-primary">
+                            <i class="fas fa-envelope me-2"></i>
+                            Contáctanos
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-6 mb-4">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body p-4">
+                        <h4 class="card-title mb-4">
+                            <i class="fas fa-clock text-primary me-2"></i>
+                            Horarios de Servicio
+                        </h4>
+                        
+                        <div class="mb-3">
+                            <strong>Domingos:</strong><br>
+                            <%= infoIglesia.horarios.domingo %>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <strong>Miércoles:</strong><br>
+                            <%= infoIglesia.horarios.miercoles %>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <strong>Viernes:</strong><br>
+                            <%= infoIglesia.horarios.viernes %>
+                        </div>
+                        
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>¡Te esperamos!</strong> Ven como estés, Dios te ama tal como eres.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="py-5 bg-primary text-white">
+    <div class="container text-center">
+        <h2 class="mb-4">¿Primera vez visitándonos?</h2>
+        <p class="lead mb-4">
+            Te damos la más cordial bienvenida. Esperamos conocerte y ser de bendición en tu vida.
+        </p>
+        <div class="d-flex justify-content-center gap-3 flex-wrap">
+            <a href="/contacto" class="btn btn-light btn-lg">
+                <i class="fas fa-heart me-2"></i>
+                Quiero conocer más
+            </a>
+            <a href="tel:<%= infoIglesia.telefono %>" class="btn btn-outline-light btn-lg">
+                <i class="fas fa-phone me-2"></i>
+                Llamar ahora
+            </a>
+        </div>
+    </div>
+</section>
+
+<style>
+.hero-section {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" fill="white" fill-opacity="0.1"><polygon points="1000,0 1000,100 0,100"/></svg>');
+    background-size: cover;
+    background-position: bottom;
+    z-index: 1;
+}
+
+.hero-section .container {
+    position: relative;
+    z-index: 2;
+}
+
+.bg-gradient-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.card {
+    transition: transform 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.hero-image i {
+    font-size: 10rem;
+    color: rgba(255, 255, 255, 0.3);
+}
+</style>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-4">
+                    <h5 class="fw-bold mb-3">
+                        <i class="fas fa-church me-2"></i>
+                        Iglesia MQV
+                    </h5>
+                    <p class="text-muted">
+                        Más que Vencedores - Un lugar donde Dios transforma vidas y fortalece familias en Cristo.
+                    </p>
+                    <div class="d-flex gap-2">
+                        <a href="#" class="btn btn-outline-light btn-sm">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="btn btn-outline-light btn-sm">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="btn btn-outline-light btn-sm">
+                            <i class="fab fa-youtube"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-4 mb-4">
+                    <h5 class="fw-bold mb-3">Enlaces Rápidos</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="/" class="text-decoration-none text-muted">Inicio</a></li>
+                        <li><a href="/ministerios" class="text-decoration-none text-muted">Ministerios</a></li>
+                        <li><a href="/acerca" class="text-decoration-none text-muted">Acerca</a></li>
+                        <li><a href="/contacto" class="text-decoration-none text-muted">Contacto</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-4 mb-4">
+                    <h5 class="fw-bold mb-3">Contacto</h5>
+                    <p class="text-muted mb-2">
+                        <i class="fas fa-map-marker-alt me-2"></i>
+                        <%= infoIglesia.direccion %>
+                    </p>
+                    <p class="text-muted mb-2">
+                        <i class="fas fa-phone me-2"></i>
+                        <%= infoIglesia.telefono %>
+                    </p>
+                    <p class="text-muted">
+                        <i class="fas fa-envelope me-2"></i>
+                        <%= infoIglesia.email %>
+                    </p>
+                </div>
+            </div>
+            <hr class="border-secondary">
+            <div class="text-center">
+                <p class="mb-0 text-muted">
+                    &copy; 2024 Iglesia Más que Vencedores. Todos los derechos reservados.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <!-- Custom JS -->
+    <script src="/js/main.js"></script>
+</body>
+</html>

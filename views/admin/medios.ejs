@@ -1,0 +1,232 @@
+<div id="notifications"></div>
+
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
+    <h1 class="h2 mb-0">
+        <i class="fas fa-images me-2 text-primary"></i>
+        Gestión de Medios
+    </h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group me-2">
+            <button type="button" class="btn btn-primary btn-sm" onclick="showUploadModal()">
+                <i class="fas fa-upload me-1"></i>
+                Subir Media
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Filtros -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <select class="form-select" id="ministerioFilter">
+            <option value="">Todos los Ministerios</option>
+            <option value="Adoración y Música">Adoración y Música</option>
+            <option value="Jóvenes">Jóvenes</option>
+            <option value="Niños">Niños</option>
+            <option value="Mujeres">Mujeres</option>
+            <option value="Hombres">Hombres</option>
+            <option value="Intercesión">Intercesión</option>
+            <option value="Evangelismo">Evangelismo</option>
+            <option value="Misiones">Misiones</option>
+            <option value="Diaconos">Diaconos</option>
+        </select>
+    </div>
+    <div class="col-md-6">
+        <select class="form-select" id="tipoFilter">
+            <option value="">Todos los Tipos</option>
+            <option value="imagen">Imágenes</option>
+            <option value="video">Videos</option>
+        </select>
+    </div>
+</div>
+
+<!-- Media Grid -->
+<div id="mediaGrid" class="row g-4">
+    <% if (medios && medios.length > 0) { %>
+        <% medios.forEach(media => { %>
+            <div class="col-md-6 col-lg-4 media-item" data-ministerio="<%= media.ministerio %>" data-tipo="<%= media.tipo %>">
+                <div class="card h-100">
+                    <% if (media.tipo === 'imagen') { %>
+                        <img src="<%= media.url %>" class="card-img-top" alt="<%= media.titulo %>" style="height: 200px; object-fit: cover;">
+                    <% } else if (media.tipo === 'video') { %>
+                        <div class="card-img-top d-flex align-items-center justify-content-center bg-light" style="height: 200px;">
+                            <i class="fas fa-play-circle fa-3x text-primary"></i>
+                        </div>
+                    <% } %>
+                    <div class="card-body">
+                        <h6 class="card-title"><%= media.titulo %></h6>
+                        <p class="card-text">
+                            <small class="text-muted">
+                                <i class="fas fa-church me-1"></i>
+                                <%= media.ministerio %>
+                            </small>
+                        </p>
+                        <p class="card-text">
+                            <small class="text-muted">
+                                <i class="fas fa-calendar me-1"></i>
+                                <%= new Date(media.createdAt).toLocaleDateString() %>
+                            </small>
+                        </p>
+                    </div>
+                    <div class="card-footer">
+                        <div class="btn-group w-100">
+                            <button class="btn btn-sm btn-outline-primary" onclick="editMedia('<%= media._id %>')">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger" onclick="deleteMedia('<%= media._id %>')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <% }) %>
+    <% } else { %>
+        <div class="col-12">
+            <div class="text-center py-5">
+                <i class="fas fa-images fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">No hay medios disponibles</h5>
+                <p class="text-muted">Sube el primer contenido multimedia para tu ministerio</p>
+                <button class="btn btn-primary" onclick="showUploadModal()">
+                    <i class="fas fa-upload me-2"></i>
+                    Subir Media
+                </button>
+            </div>
+        </div>
+    <% } %>
+</div>
+
+<!-- Modal para subir media -->
+<div class="modal fade" id="uploadModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-upload me-2"></i>
+                    Subir Media
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="uploadForm" enctype="multipart/form-data">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="titulo" class="form-label">Título</label>
+                            <input type="text" class="form-control" id="titulo" name="titulo" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="ministerio" class="form-label">Ministerio</label>
+                            <select class="form-select" id="ministerio" name="ministerio" required>
+                                <option value="">Seleccionar Ministerio</option>
+                                <option value="Adoración y Música">Adoración y Música</option>
+                                <option value="Jóvenes">Jóvenes</option>
+                                <option value="Niños">Niños</option>
+                                <option value="Mujeres">Mujeres</option>
+                                <option value="Hombres">Hombres</option>
+                                <option value="Intercesión">Intercesión</option>
+                                <option value="Evangelismo">Evangelismo</option>
+                                <option value="Misiones">Misiones</option>
+                                <option value="Diaconos">Diaconos</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="descripcion" class="form-label">Descripción</label>
+                        <textarea class="form-control" id="descripcion" name="descripcion" rows="3"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="archivo" class="form-label">Archivo</label>
+                        <input type="file" class="form-control" id="archivo" name="archivo" accept="image/*,video/*" required>
+                        <div class="form-text">Formatos soportados: JPG, PNG, MP4, AVI (máximo 10MB)</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-upload me-2"></i>
+                        Subir
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+// JavaScript para gestión de medios
+function showUploadModal() {
+    new bootstrap.Modal(document.getElementById('uploadModal')).show();
+}
+
+function editMedia(id) {
+    // Implementar edición de media
+    console.log('Editar media:', id);
+}
+
+function deleteMedia(id) {
+    if (confirm('¿Estás seguro de que quieres eliminar este media?')) {
+        fetch(`/admin/media/${id}`, {
+            method: 'DELETE'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Error al eliminar el media');
+            }
+        });
+    }
+}
+
+// Filtros
+document.getElementById('ministerioFilter').addEventListener('change', filterMedia);
+document.getElementById('tipoFilter').addEventListener('change', filterMedia);
+
+function filterMedia() {
+    const ministerioFilter = document.getElementById('ministerioFilter').value;
+    const tipoFilter = document.getElementById('tipoFilter').value;
+    
+    const items = document.querySelectorAll('.media-item');
+    
+    items.forEach(item => {
+        const ministerio = item.dataset.ministerio;
+        const tipo = item.dataset.tipo;
+        
+        let show = true;
+        
+        if (ministerioFilter && ministerio !== ministerioFilter) {
+            show = false;
+        }
+        
+        if (tipoFilter && tipo !== tipoFilter) {
+            show = false;
+        }
+        
+        item.style.display = show ? 'block' : 'none';
+    });
+}
+
+// Form upload
+document.getElementById('uploadForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    
+    fetch('/admin/media/upload', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Error al subir el archivo: ' + data.message);
+        }
+    })
+    .catch(error => {
+        alert('Error al subir el archivo');
+    });
+});
+</script>
