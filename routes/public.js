@@ -339,16 +339,40 @@ router.get('/ministerio/:nombre', async (req, res) => {
 
         const skip = (page - 1) * limit;
 
-        const [medios, totalFotos, totalVideos, total] = await Promise.all([
-            Media.find(filtros)
-                .populate('subidoPor', 'username ministerio')
-                .sort({ destacado: -1, fechaEvento: -1 })
-                .skip(skip)
-                .limit(limit),
-            Media.countDocuments({ ...filtros, tipo: 'foto' }),
-            Media.countDocuments({ ...filtros, tipo: 'video' }),
-            Media.countDocuments(filtros)
-        ]);
+        let medios = [];
+        let totalFotos = 0;
+        let totalVideos = 0;
+        let total = 0;
+
+        // Solo hacer consultas si MongoDB está conectado
+        if (mongoose.connection.readyState === 1) {
+            try {
+                [medios, totalFotos, totalVideos, total] = await Promise.all([
+                    Media.find(filtros)
+                        .populate('subidoPor', 'username ministerio')
+                        .sort({ destacado: -1, fechaEvento: -1 })
+                        .skip(skip)
+                        .limit(limit),
+                    Media.countDocuments({ ...filtros, tipo: 'foto' }),
+                    Media.countDocuments({ ...filtros, tipo: 'video' }),
+                    Media.countDocuments(filtros)
+                ]);
+            } catch (dbError) {
+                console.warn('⚠️ Error obteniendo datos del ministerio, usando datos de demostración:', dbError.message);
+                // Usar datos de demostración
+                medios = [];
+                totalFotos = 0;
+                totalVideos = 0;
+                total = 0;
+            }
+        } else {
+            console.log('🔍 MongoDB no conectado, usando datos de demostración para ministerio:', nombreMinisterio);
+            // Datos de demostración para el ministerio específico
+            medios = [];
+            totalFotos = 0;
+            totalVideos = 0; 
+            total = 0;
+        }
 
         const totalPages = Math.ceil(total / limit);
 

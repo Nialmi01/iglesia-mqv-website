@@ -43,8 +43,7 @@ const connectDB = async () => {
             serverSelectionTimeoutMS: 10000, // Timeout después de 10s
             socketTimeoutMS: 45000, // Cerrar sockets después de 45s de inactividad
             maxPoolSize: 10, // Mantener hasta 10 conexiones de socket
-            bufferMaxEntries: 0, // Deshabilitar mongoose buffering
-            bufferCommands: false, // Deshabilitar mongoose buffering
+            // Remover opciones de buffering para evitar errores
         };
 
         if (process.env.NODE_ENV === 'production') {
