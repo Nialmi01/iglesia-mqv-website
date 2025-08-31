@@ -124,39 +124,48 @@ router.get('/', async (req, res) => {
         
         // Verificar si MongoDB está disponible
         if (mongoose.connection.readyState === 1) {
-            // MongoDB disponible - usar datos reales
-            mediosDestacados = await Media.find({ 
-                destacado: true, 
-                activo: true 
-            })
-            .sort({ createdAt: -1 })
-            .limit(5);
-
-            // Obtener algunos medios recientes de cada ministerio para mostrar
-            const ministerios = [
-                'Adoración y Música',
-                'Jóvenes',
-                'Niños',
-                'Mujeres',
-                'Hombres',
-                'Intercesión',
-                'Evangelismo',
-                'Misiones',
-                'Diaconos'
-            ];
-            
-            for (const ministerio of ministerios) {
-                const medios = await Media.find({ 
-                    ministerio, 
+            try {
+                // MongoDB disponible - usar datos reales
+                mediosDestacados = await Media.find({ 
+                    destacado: true, 
                     activo: true 
                 })
                 .sort({ createdAt: -1 })
-                .limit(4);
+                .limit(5);
+
+                // Obtener algunos medios recientes de cada ministerio para mostrar
+                const ministerios = [
+                    'Adoración y Música',
+                    'Jóvenes',
+                    'Niños',
+                    'Mujeres',
+                    'Hombres',
+                    'Intercesión',
+                    'Evangelismo',
+                    'Misiones',
+                    'Diaconos'
+                ];
                 
-                mediosPorMinisterio[ministerio] = medios;
+                for (const ministerio of ministerios) {
+                    const medios = await Media.find({ 
+                        ministerio, 
+                        activo: true 
+                    })
+                    .sort({ createdAt: -1 })
+                    .limit(4);
+                    
+                    mediosPorMinisterio[ministerio] = medios;
+                }
+            } catch (dbError) {
+                console.warn('⚠️ Error obteniendo datos de MongoDB, usando datos de demostración:', dbError.message);
+                // Usar datos de demostración si hay error
+                const demoData = getDemoData();
+                mediosDestacados = demoData.mediosDestacados;
+                mediosPorMinisterio = demoData.mediosPorMinisterio;
             }
         } else {
             // MongoDB no disponible - usar datos de demostración
+            console.log('🔍 MongoDB no conectado, usando datos de demostración');
             const demoData = getDemoData();
             mediosDestacados = demoData.mediosDestacados;
             mediosPorMinisterio = demoData.mediosPorMinisterio;
@@ -257,13 +266,28 @@ router.get('/ministerios', async (req, res) => {
             }
         ];
 
-        // Obtener estadísticas de cada ministerio
-        for (let ministerio of ministerios) {
-            const totalMedias = await Media.countDocuments({
-                ministerio: ministerio.nombre,
-                activo: true
+        // Obtener estadísticas de cada ministerio solo si MongoDB está disponible
+        if (mongoose.connection.readyState === 1) {
+            try {
+                for (let ministerio of ministerios) {
+                    const totalMedias = await Media.countDocuments({
+                        ministerio: ministerio.nombre,
+                        activo: true
+                    });
+                    ministerio.totalMedias = totalMedias;
+                }
+            } catch (dbError) {
+                console.warn('⚠️ Error obteniendo estadísticas de ministerios:', dbError.message);
+                // Agregar valores por defecto si hay error de DB
+                ministerios.forEach(ministerio => {
+                    ministerio.totalMedias = 0;
+                });
+            }
+        } else {
+            // MongoDB no disponible - usar valores por defecto
+            ministerios.forEach(ministerio => {
+                ministerio.totalMedias = 0;
             });
-            ministerio.totalMedias = totalMedias;
         }
 
         res.render('public/ministerios', {
