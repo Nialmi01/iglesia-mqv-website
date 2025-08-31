@@ -40,7 +40,7 @@ const connectDB = async () => {
         const mongoOptions = {
             useNewUrlParser: true,
             useUnifiedTopology: true,
-            serverSelectionTimeoutMS: 5000, // Timeout después de 5s en lugar de 30s
+            serverSelectionTimeoutMS: 10000, // Timeout después de 10s
             socketTimeoutMS: 45000, // Cerrar sockets después de 45s de inactividad
             maxPoolSize: 10, // Mantener hasta 10 conexiones de socket
             bufferMaxEntries: 0, // Deshabilitar mongoose buffering
@@ -54,6 +54,11 @@ const connectDB = async () => {
 
         await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/iglesia_mqv', mongoOptions);
         console.log('✅ Conectado a MongoDB');
+        
+        // Inicializar datos solo después de conectar exitosamente
+        await initializeApp();
+        
+        return true;
     } catch (error) {
         console.error('❌ Error conectando a MongoDB:', error.message);
         
@@ -67,11 +72,9 @@ const connectDB = async () => {
         }
         
         console.log('⚠️  La aplicación continuará funcionando, pero necesita MongoDB para ser completamente funcional');
+        return false;
     }
 };
-
-// Llamar función de conexión
-connectDB();
 
 // Importar rutas
 const authRoutes = require('./routes/auth');
@@ -110,9 +113,15 @@ app.use('*', (req, res) => {
     res.status(404).render('404', { title: 'Página no encontrada' });
 });
 
-// Inicializar datos por defecto
+// Función para inicializar la aplicación
 const initializeApp = async () => {
     try {
+        // Solo intentar si MongoDB está conectado
+        if (mongoose.connection.readyState !== 1) {
+            console.log('⚠️  MongoDB no disponible - Saltando inicialización de datos');
+            return;
+        }
+
         const User = require('./models/User');
         
         // Buscar usuario administrador existente
@@ -142,34 +151,43 @@ const initializeApp = async () => {
             console.log('✅ Usuario administrador verificado - username: admin');
         }
     } catch (error) {
-        console.error('Error inicializando la aplicación:', error.message);
+        console.error('❌ Error inicializando la aplicación:', error.message);
+        console.log('⚠️  Continuando sin inicialización de datos...');
     }
 };
 
-// Iniciar servidor
-app.listen(PORT, () => {
-    console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
-    console.log(`📊 Ambiente: ${process.env.NODE_ENV || 'development'}`);
-    console.log('');
-    console.log('='.repeat(60));
-    console.log('🏛️  IGLESIA MÁS QUE VENCEDORES (MQV) - WEBSITE');
-    console.log('='.repeat(60));
-    console.log('📍 URL Local: http://localhost:' + PORT);
-    console.log('🔧 Panel Admin: http://localhost:' + PORT + '/admin');
-    console.log('🔑 Credenciales por defecto:');
-    console.log('   - Usuario: admin');
-    console.log('   - Contraseña: admin123');
-    console.log('='.repeat(60));
-    console.log('');
+// Función async para iniciar la aplicación
+const startApp = async () => {
+    // Primero conectar a MongoDB
+    const dbConnected = await connectDB();
     
-    // Intentar inicializar datos solo si MongoDB está disponible
-    setTimeout(() => {
-        if (mongoose.connection.readyState === 1) {
-            initializeApp();
+    // Iniciar servidor independientemente de MongoDB
+    const server = app.listen(PORT, () => {
+        console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
+        console.log(`📊 Ambiente: ${process.env.NODE_ENV || 'development'}`);
+        console.log('');
+        console.log('='.repeat(60));
+        console.log('🏛️  IGLESIA MÁS QUE VENCEDORES (MQV) - WEBSITE');
+        console.log('='.repeat(60));
+        console.log('📍 URL Local: http://localhost:' + PORT);
+        console.log('🔧 Panel Admin: http://localhost:' + PORT + '/admin');
+        console.log('🔑 Credenciales por defecto:');
+        console.log('   - Usuario: admin');
+        console.log('   - Contraseña: admin123');
+        console.log('='.repeat(60));
+        console.log('');
+        
+        if (dbConnected) {
+            console.log('🎯 MongoDB conectado - Funcionalidad completa disponible');
         } else {
-            console.log('⚠️  MongoDB no disponible - Inicialización omitida');
+            console.log('⚠️  Modo demostración - Configurar MongoDB para funcionalidad completa');
         }
-    }, 2000);
-});
+    });
+
+    return server;
+};
+
+// Iniciar la aplicación
+startApp().catch(console.error);
 
 module.exports = app;

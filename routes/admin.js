@@ -1,4 +1,5 @@
 const express = require('express');
+const mongoose = require('mongoose');
 const User = require('../models/User');
 const Media = require('../models/Media');
 const { verificarTokenWeb, verificarAdmin } = require('../middleware/auth');
@@ -42,6 +43,41 @@ router.post('/login', async (req, res) => {
             });
         }
 
+        // Verificar si MongoDB está disponible
+        if (mongoose.connection.readyState !== 1) {
+            console.log('⚠️ MongoDB no disponible, usando credenciales por defecto');
+            
+            // Credenciales por defecto para modo demostración
+            if (username === 'admin' && password === 'admin123') {
+                const jwt = require('jsonwebtoken');
+                const token = jwt.sign(
+                    { 
+                        userId: 'demo-admin', 
+                        username: 'admin',
+                        role: 'admin',
+                        ministerio: 'Administración'
+                    },
+                    process.env.JWT_SECRET || 'fallback-secret',
+                    { expiresIn: '24h' }
+                );
+
+                res.cookie('token', token, {
+                    httpOnly: true,
+                    secure: process.env.NODE_ENV === 'production',
+                    maxAge: 24 * 60 * 60 * 1000
+                });
+
+                console.log('✅ Login exitoso (modo demostración)');
+                return res.redirect('/admin/dashboard');
+            } else {
+                return res.render('admin/login', { 
+                    title: 'Iniciar Sesión - Admin MQV', 
+                    error: 'Credenciales inválidas. Use: admin / admin123' 
+                });
+            }
+        }
+
+        // MongoDB disponible - usar base de datos
         const user = await User.findOne({ 
             $or: [{ username }, { email: username }]
         });
