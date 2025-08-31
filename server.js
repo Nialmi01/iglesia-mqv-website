@@ -174,16 +174,27 @@ const startApp = async () => {
     // Primero conectar a MongoDB
     const dbConnected = await connectDB();
     
+    // Configuración para Render - escuchar en todas las interfaces
+    const HOST = process.env.NODE_ENV === 'production' ? '0.0.0.0' : 'localhost';
+    
     // Iniciar servidor independientemente de MongoDB
-    const server = app.listen(PORT, () => {
-        console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
+    const server = app.listen(PORT, HOST, () => {
+        console.log(`🚀 Servidor corriendo en http://${HOST}:${PORT}`);
         console.log(`📊 Ambiente: ${process.env.NODE_ENV || 'development'}`);
+        console.log(`🌐 Host: ${HOST}`);
         console.log('');
         console.log('='.repeat(60));
         console.log('🏛️  IGLESIA MÁS QUE VENCEDORES (MQV) - WEBSITE');
         console.log('='.repeat(60));
-        console.log('📍 URL Local: http://localhost:' + PORT);
-        console.log('🔧 Panel Admin: http://localhost:' + PORT + '/admin');
+        
+        if (process.env.NODE_ENV === 'production') {
+            console.log('🌍 URL Producción: https://iglesia-mqv-website.onrender.com');
+            console.log('� Panel Admin: https://iglesia-mqv-website.onrender.com/admin');
+        } else {
+            console.log('�📍 URL Local: http://localhost:' + PORT);
+            console.log('🔧 Panel Admin: http://localhost:' + PORT + '/admin');
+        }
+        
         console.log('🔑 Credenciales por defecto:');
         console.log('   - Usuario: admin');
         console.log('   - Contraseña: admin123');
