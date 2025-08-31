@@ -16,10 +16,24 @@ app.use(helmet({
 }));
 app.use(cors());
 
-// Rate limiting
+// Rate limiting - configuración ajustada para producción
 const limiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutos
-    max: 100 // límite de 100 requests por IP
+    max: process.env.NODE_ENV === 'production' ? 1000 : 100, // 1000 en producción, 100 en desarrollo
+    message: {
+        error: 'Demasiadas solicitudes desde esta IP. Intenta de nuevo en 15 minutos.',
+        retryAfter: '15 minutos'
+    },
+    standardHeaders: true, // Incluir rate limit info en headers
+    legacyHeaders: false, // Deshabilitar headers X-RateLimit-*
+    // Aplicar rate limiting solo a rutas específicas
+    skip: (req) => {
+        // No aplicar rate limiting a assets estáticos y health check
+        return req.path.startsWith('/public') || 
+               req.path.startsWith('/uploads') || 
+               req.path === '/health' ||
+               req.path.startsWith('/assets');
+    }
 });
 app.use(limiter);
 

@@ -1,5 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const rateLimit = require('express-rate-limit');
 const User = require('../models/User');
 const Media = require('../models/Media');
 const { verificarTokenWeb, verificarAdmin } = require('../middleware/auth');
@@ -8,6 +9,18 @@ const fs = require('fs');
 const path = require('path');
 
 const router = express.Router();
+
+// Rate limiting específico para login (más restrictivo)
+const loginLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutos
+    max: 20, // 20 intentos de login por IP cada 15 minutos
+    message: {
+        error: 'Demasiados intentos de login. Intenta de nuevo en 15 minutos.',
+        retryAfter: '15 minutos'
+    },
+    standardHeaders: true,
+    legacyHeaders: false,
+});
 
 // Middleware para parsing de cookies
 const cookieParser = require('cookie-parser');
@@ -29,8 +42,8 @@ router.get('/login', (req, res) => {
     res.render('admin/login', { title: 'Iniciar Sesión - Admin MQV', error: null });
 });
 
-// Procesar login
-router.post('/login', async (req, res) => {
+// Procesar login (con rate limiting específico)
+router.post('/login', loginLimiter, async (req, res) => {
     try {
         console.log('🔐 Intento de login:', req.body);
         const { username, password } = req.body;
